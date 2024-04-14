@@ -1,0 +1,203 @@
+# примеры API-запросов
+
+@baseUrl = http://localhost:8000/api/v1
+
+# информация о пользователе
+GET {{baseUrl}}/auth/users/
+Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyOTg0MjU0LCJpYXQiOjE3MTI5ODA2NTQsImp0aSI6ImEwZjE0NGEzOWMwNTRjMWI5MTUzMDBkMDY0MWMwMjQyIiwidXNlcl9pZCI6OH0.dtDh7ftJ3kgO-0jMmyiVu3oXVWVqJmiUhjoLS6gXYHE
+
+{
+  
+}
+
+###
+# регистрация пользователя с отправкой кода активации на почту
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "first_name": "Владислав",
+  "last_name": "Владимиров",
+  "email": "wladivir@mail.ru",
+  "password": "ViTaLa1209110",
+}
+
+###
+
+# активация пользователя по коду из письма
+POST {{baseUrl}}/auth/users/activation/
+Content-Type: application/json
+
+{
+  "uid": "MTY",
+  "token": "c55c9e-2608feecb1b11b09f1393fb6b8873b5d"
+}
+
+###
+
+# Повторная отправка кода активации пользователя если пользователь еще не активировался
+# в случае если пользователь уже активировался письмо не отправляется
+POST {{baseUrl}}/auth/users/resend_activation/
+Content-Type: application/json
+
+{
+  "email": "epic.xx@mail.ru"
+}
+
+###
+
+# Авторизация
+POST {{baseUrl}}/auth/token/jwt/create/
+Content-Type: application/json
+
+{
+  "email": "wladivir1@mail.ru",
+  "password": "ViTaLa1209110"
+}
+
+###
+
+#повторная отправка acces токена используя refresh токен
+POST {{baseUrl}}/auth/token/jwt/refresh/
+Content-Type: application/json
+
+{
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcxMjQ2MTc4MiwiaWF0IjoxNzEyMzc1MzgyLCJqdGkiOiJmZDhmNzUyZTc2NmI0OWU0YmNlNDcwYzAzMDg5Y2ZmNSIsInVzZXJfaWQiOjEwfQ.jFgtnE-t8ELnIFgZR-LzXPiLuG7XbvT3INvNN7qka5s"
+}
+
+###
+
+# Проверка acess токена
+POST {{baseUrl}}/auth/token/jwt/verify/
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyOTg0MjU0LCJpYXQiOjE3MTI5ODA2NTQsImp0aSI6ImEwZjE0NGEzOWMwNTRjMWI5MTUzMDBkMDY0MWMwMjQyIiwidXNlcl9pZCI6OH0.dtDh7ftJ3kgO-0jMmyiVu3oXVWVqJmiUhjoLS6gXYHE"
+}
+
+###
+
+# Смена пароля
+POST {{baseUrl}}/auth/users/set_password/
+Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyOTg0MjU0LCJpYXQiOjE3MTI5ODA2NTQsImp0aSI6ImEwZjE0NGEzOWMwNTRjMWI5MTUzMDBkMDY0MWMwMjQyIiwidXNlcl9pZCI6OH0.dtDh7ftJ3kgO-0jMmyiVu3oXVWVqJmiUhjoLS6gXYHE
+
+{
+  "new_password": "ViTaLa1209110",
+  "current_password": "ViTaLa1209110"
+}
+
+###
+
+# # Удаление аккаунта
+# DELETE  {{baseUrl}}/auth/users/me
+# Content-Type: application/json
+# Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyMzgzOTcxLCJpYXQiOjE3MTIzNzUzODIsImp0aSI6ImUzOGRmMzkyYWFjYjRmMmM5NDA3ZDA5OGQyYzQ1ZjMzIiwidXNlcl9pZCI6MTB9.Zuf291pyHb5oPYkJHkEy5D4_NYigDUGKFRJuGBks5zQ
+
+# {
+#   "current_password": "ViTaLa1209110",
+# }
+
+###
+#Загрузка прайслиста
+POST {{baseUrl}}/partner/update/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTUyMjQyLCJpYXQiOjE3MTI1NDg2NDIsImp0aSI6IjdjYmU0MmRiZjFlNzQ3YzhhNmY1YTJiNjEwZmJmZDVhIiwidXNlcl9pZCI6MTZ9.Z-pLTRbgOXFDt7BJjn9TabI6QVOXN2FY1hJo8umJNeY
+
+{
+  "url": "https://raw.githubusercontent.com/netology-code/pd-diplom/master/data/shop1.yaml"
+}
+
+###
+#Получение статуса заказа
+# GET {{baseUrl}}/partner/state/
+# Content-Type: application/json 
+# Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNDI5MzAxLCJpYXQiOjE3MTI0MjU3MDEsImp0aSI6ImE3OGI1YTk4ZTA1ZDQwNGZiMTIyMWExNzhlNDRmZGQ5IiwidXNlcl9pZCI6MTF9.l7Yw_3srgbiVxxFE7qXXpcWENbngXkmlcZp4suAhym0
+
+# {
+#   "url": "https://raw.githubusercontent.com/netology-code/pd-diplom/master/data/shop1.yaml"
+# }
+
+###
+#Смена адреса
+GET {{baseUrl}}/user/contacts/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTcwNTE5LCJpYXQiOjE3MTI1NjY5MTksImp0aSI6IjM3Y2EwOTljYTRhZDQyOGI4YWE0YjZjMzYzM2VjZGIzIiwidXNlcl9pZCI6MTZ9.vLiS6oI2M8S5B6kvNjHnbdPNCmGV7zT2P8fgYBa9SQA
+
+{
+    
+}
+
+###
+#Смена адреса
+PUT {{baseUrl}}/user/contacts/update/3/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTcwNTE5LCJpYXQiOjE3MTI1NjY5MTksImp0aSI6IjM3Y2EwOTljYTRhZDQyOGI4YWE0YjZjMzYzM2VjZGIzIiwidXNlcl9pZCI6MTZ9.vLiS6oI2M8S5B6kvNjHnbdPNCmGV7zT2P8fgYBa9SQA
+
+{
+    "index": "321",
+    "city": "ggg",
+    "street": "jgfh",
+    "house": "5",
+    "structure": "",
+    "building": "",
+    "apartment": "5"
+}
+
+###
+
+#Создание адреса
+POST {{baseUrl}}/user/contacts/create/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTcwNTE5LCJpYXQiOjE3MTI1NjY5MTksImp0aSI6IjM3Y2EwOTljYTRhZDQyOGI4YWE0YjZjMzYzM2VjZGIzIiwidXNlcl9pZCI6MTZ9.vLiS6oI2M8S5B6kvNjHnbdPNCmGV7zT2P8fgYBa9SQA
+
+{
+    "index": "3213",
+    "city": "ggg",
+    "street": "jgfh",
+    "house": "5",
+    "structure": "",
+    "building": "",
+    "apartment": "5"
+}
+
+###
+
+# Удаление адреса
+DELETE {{baseUrl}}/user/contacts/destroy/3/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTcwNTE5LCJpYXQiOjE3MTI1NjY5MTksImp0aSI6IjM3Y2EwOTljYTRhZDQyOGI4YWE0YjZjMzYzM2VjZGIzIiwidXNlcl9pZCI6MTZ9.vLiS6oI2M8S5B6kvNjHnbdPNCmGV7zT2P8fgYBa9SQA
+
+{
+    
+}
+
+###
+
+# Список продуктов
+GET {{baseUrl}}/products?shop=1&product__category__id=224
+Content-Type: application/json 
+
+
+{
+  
+
+}
+
+
+###
+
+# Удаление адреса
+POST {{baseUrl}}/orders/
+Content-Type: application/json 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNjgxMTIxLCJpYXQiOjE3MTI2Nzc1MjEsImp0aSI6IjhhZmY2NTk1Y2MyMDRjNmViZGIxMDkwYTdkZTkyODM2IiwidXNlcl9pZCI6MTZ9.zo9OsglU-gnB1nRazAGYSCp4wuifB4e1z273LI-VlPk
+
+
+{
+  
+  "product": 1,
+  "quantity": 1
+   
+    
+}

@@ -1,9 +1,10 @@
 from django.db import models
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
-from django_rest_passwordreset.tokens import get_token_generator
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .managers import UserManager
 
 # Create your models here.
 USER_TYPE_CHOICES = (
@@ -15,7 +16,7 @@ USER_TYPE_CHOICES = (
 
 class User(AbstractUser):
     """
-    Стандартная модель пользователей
+    Модель пользователя для входа в систему и регистрации.
     """
     REQUIRED_FIELDS = ['first_name', 'last_name']
     objects = UserManager()
@@ -45,16 +46,21 @@ class User(AbstractUser):
     )
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
 
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = "Список пользователей"
+        app_label = 'accounts'
         ordering = ('email',)
         
         
+    def __str__(self) -> str:
+        """ Магический метод для представления объекта в консоли. """
+        return self.email        
+        
+        
 class Contact(models.Model):
+    """ Модель для работы с контактами пользователя """
     objects = models.manager.Manager()
     user = models.ForeignKey(User, verbose_name='Пользователь',
                              related_name='contacts', blank=True,
@@ -71,5 +77,6 @@ class Contact(models.Model):
         verbose_name = 'Контакты пользователя'
         verbose_name_plural = "Список контактов пользователя"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """ Магический метод для представления объекта в консоли. """
         return f'{self.city} {self.street} {self.house}'        

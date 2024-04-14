@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
@@ -43,7 +44,7 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'rest_framework.authtoken',
-    'django_rest_passwordreset',
+    'djoser',
     'django_filters',
     
     'shop.apps.ShopConfig',
@@ -118,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'ru_ru'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -136,7 +137,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'accounts.User'
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
+#EMAIL_HOST = os.getenv('EMAIL_HOST')
 
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
@@ -153,16 +154,49 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
 
     ),
+    
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
     
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
 
+}
+
+#DJOSER
+DJOSER = {
+    'PASSWORD_CHANGE_EMAIL_CONFIRMATION': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOTFOUND': True,
+    'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'HIDE_USERS': True,
+    'LOGAUT_ON_PASSWORD_CHANGE': True,
+    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/users/reset_password_confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'api/v1/users/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
+    'SERIALIZERS': {
+        'current_user': 'serializers.serializers_accounts.CustomUserSerializer',
+        'activation': 'djoser.serializers.ActivationSerializer',
+        'user_delete': 'djoser.serializers.UserDeleteSerializer',
+        'password_reset': 'djoser.serializers.SendEmailResetSerializer',
+        'password_reset_confirm': 'djoser.serializers.PasswordResetConfirmSerializer',
+        'password_reset_confirm_retype': 'djoser.serializers.PasswordResetConfirmRetypeSerializer',
+        'set_password': 'djoser.serializers.SetPasswordSerializer',
+        'set_password_retype': 'djoser.serializers.SetPasswordRetypeSerializer',
+        'user_create': 'djoser.serializers.UserCreateSerializer',
+        'user_create_password_retype': 'djoser.serializers.UserCreatePasswordRetypeSerializer',
+        'user_delete': 'djoser.serializers.UserDeleteSerializer',
+        },
 }
 
 # Default primary key field type
