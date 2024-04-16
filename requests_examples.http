@@ -3,7 +3,7 @@
 @baseUrl = http://localhost:8000/api/v1
 
 # информация о пользователе
-GET {{baseUrl}}/auth/users/
+GET {{baseUrl}}/users/me
 Content-Type: application/json
 Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyOTg0MjU0LCJpYXQiOjE3MTI5ODA2NTQsImp0aSI6ImEwZjE0NGEzOWMwNTRjMWI5MTUzMDBkMDY0MWMwMjQyIiwidXNlcl9pZCI6OH0.dtDh7ftJ3kgO-0jMmyiVu3oXVWVqJmiUhjoLS6gXYHE
 
@@ -19,14 +19,14 @@ Content-Type: application/json
 {
   "first_name": "Владислав",
   "last_name": "Владимиров",
-  "email": "wladivir@mail.ru",
+  "email": "wladivir1@mail.ru",
   "password": "ViTaLa1209110",
 }
 
 ###
 
 # активация пользователя по коду из письма
-POST {{baseUrl}}/auth/users/activation/
+POST {{baseUrl}}/users/activation/
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 # Повторная отправка кода активации пользователя если пользователь еще не активировался
 # в случае если пользователь уже активировался письмо не отправляется
-POST {{baseUrl}}/auth/users/resend_activation/
+POST {{baseUrl}}/users/resend_activation/
 Content-Type: application/json
 
 {
@@ -48,7 +48,7 @@ Content-Type: application/json
 ###
 
 # Авторизация
-POST {{baseUrl}}/auth/token/jwt/create/
+POST {{baseUrl}}/token/login
 Content-Type: application/json
 
 {
@@ -101,9 +101,9 @@ Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNj
 
 ###
 #Загрузка прайслиста
-POST {{baseUrl}}/partner/update/
+POST {{baseUrl}}/partner/update
 Content-Type: application/json 
-Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNTUyMjQyLCJpYXQiOjE3MTI1NDg2NDIsImp0aSI6IjdjYmU0MmRiZjFlNzQ3YzhhNmY1YTJiNjEwZmJmZDVhIiwidXNlcl9pZCI6MTZ9.Z-pLTRbgOXFDt7BJjn9TabI6QVOXN2FY1hJo8umJNeY
+Authorization: Token fb66af679e983de5b2ea54463dc1df1173ec6a86
 
 {
   "url": "https://raw.githubusercontent.com/netology-code/pd-diplom/master/data/shop1.yaml"

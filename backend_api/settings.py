@@ -197,6 +197,9 @@ DJOSER = {
         'user_create_password_retype': 'djoser.serializers.UserCreatePasswordRetypeSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
         },
+    'PERMISSIONS': {
+        'user': ['permission.permissions.IsOwnerOrAdminOrReadOnly'],
+        }
 }
 
 # Default primary key field type

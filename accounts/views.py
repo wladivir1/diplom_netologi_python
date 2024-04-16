@@ -9,10 +9,12 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
+from rest_framework.generics import CreateAPIView
 from djoser.views import UserViewSet
 
 from .models import User, Contact
-from serializers.serializers_accounts import ContactSerializer, UserSerializer
+from serializers.serializers_accounts import ContactSerializer, UserSerializer, TypeUserSerializer
+from permission.permissions import IsOwnerOrAdminOrReadOnly
 
 # Create your views here.
 class ActivateUser(UserViewSet):
@@ -34,7 +36,7 @@ class ContactView(viewsets.ModelViewSet):
     """ Представление для работы с контактами """
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    #permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrAdminOrReadOnly,)
+    permission_classes = (IsOwnerOrAdminOrReadOnly,)
     
     # функция для получения контактов
     def get_queryset(self):
@@ -66,4 +68,16 @@ class ContactView(viewsets.ModelViewSet):
         
         instance = self.get_object()
         self.perform_destroy(instance)
-        return JsonResponse({"Status": True}, status=status.HTTP_204_NO_CONTENT)   
+        return JsonResponse({"Status": True}, status=status.HTTP_204_NO_CONTENT)
+    
+class TypeUserView(CreateAPIView):
+    """ Представление для работы с типами контактов """
+    queryset = User.objects.all()
+    serializer_class = TypeUserSerializer
+    #permission_classes = (IsOwnerOrAdminOrReadOnly,)
+    
+    def post(self, request, *args, **kwargs):
+        user = User.objects.filter(id=request.user.id).update(type=request.data['type'])
+        if not user:
+            return JsonResponse({"Status": False, "Error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)     

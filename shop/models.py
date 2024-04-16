@@ -14,13 +14,10 @@ STATE_CHOICES = (
     ('canceled', 'Отменен'),
 )
 
-    
-
-class ShopStatusChoices(models.TextChoices):
-    """Статусы приема заказа."""
-
-    OPEN = "OPEN", "Открыто"
-    CLOSED = "CLOSED", "Закрыто"
+STATUS_CHOICES = (
+    ('open', 'Открыто'),
+    ('closed', 'Закрыто'),
+)
 
 
 # Create your models here.
@@ -30,9 +27,7 @@ class Shop(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название магазина')
     url = models.URLField(verbose_name='Ссылка на магазин', blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
-    state = models.CharField(choices=STATE_CHOICES, max_length=15, verbose_name='Статус заказа')
-    status = models.CharField(choices=ShopStatusChoices, max_length=15, 
-                              verbose_name='Статус приема', default=ShopStatusChoices.OPEN)
+    status = models.CharField(verbose_name='Статус приема заявок', choices=STATUS_CHOICES, max_length=15,  default="closed")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлен')
     
@@ -140,7 +135,7 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлен')
-    state = models.CharField(choices=STATE_CHOICES, max_length=15, verbose_name='Статус', default='basket')
+    state = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, default="basket", max_length=15)
     
     class Meta:
         verbose_name = 'Заказ'

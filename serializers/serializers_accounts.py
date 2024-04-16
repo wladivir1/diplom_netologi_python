@@ -31,4 +31,10 @@ class CustomUserSerializer(UserSerializer):
                 'phone',
                 )
         read_only_fields = ('id',) 
+        
+class TypeUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id','type',)
+        read_only_fields = ('id',)      
                  
