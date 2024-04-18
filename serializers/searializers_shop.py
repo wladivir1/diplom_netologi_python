@@ -1,15 +1,14 @@
 # shop/serializers.py
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from djoser.serializers import UserSerializer
-from djoser.serializers import UserCreateSerializer
-
 
 from shop.models import (Shop, Category, Product,
                      ProductInfo, Parameter, ProductParameter,
                      Order, OrderItem)
+
 from . serializers_accounts import ContactSerializer
 from accounts.models import Contact, User
+
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -46,9 +45,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id','category', 'name')
-        
-        
-        
+
+
 class ProductParameterSerializer(serializers.ModelSerializer):
     """ Сериализатор параметра """
     

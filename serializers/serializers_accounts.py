@@ -5,8 +5,6 @@ from accounts.models import User, Contact
         
         
 
-       
-
 class ContactSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
@@ -17,9 +15,9 @@ class ContactSerializer(serializers.ModelSerializer):
         def create(self, validated_data):
             contact = Contact.objects.create(**validated_data)
             
-            
-            
-        
+            return contact
+
+
 class CustomUserSerializer(UserSerializer):
     
     class Meta(UserSerializer.Meta):
@@ -33,10 +31,11 @@ class CustomUserSerializer(UserSerializer):
                 'phone',
                 )
         read_only_fields = ('id',) 
-        
+
+
 class TypeUserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
         fields = ('id','type',)
         read_only_fields = ('id',)      
-                 

@@ -1,40 +1,30 @@
 import logging
 
-from distutils.util import strtobool
 from django.conf import settings
 from django.http import Http404
 from django.core.exceptions import ValidationError
-from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
-from django.db.models import Q, Sum, F
-from djoser.views import UserViewSet
 from rest_framework import viewsets, status
-from rest_framework.request import Request
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import serializers
-from rest_framework.decorators import action
+from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 from django.core.validators import URLValidator
-from requests import delete, exceptions, patch, put, HTTPError, request, get
+from requests import exceptions, get
 from ujson import loads as load_json
-from yaml import serialize_all, serializer, serialize, load as load_yml, Loader
+from yaml import load as load_yml, Loader
 
 from accounts.models import User, Contact
-from permission.permissions import IsOwnerOrAdminOrReadOnly
 from .models import (Shop, Category, Parameter,
-                     Product, ProductInfo, 
-                     ProductParameter, Order, OrderItem)
+                    Product, ProductInfo, 
+                    ProductParameter, Order, OrderItem)
 from serializers.searializers_shop import (ShopSerializer, CategorySerializer,
-                          ProductInfoSerializer, OrderItemSerializer,  
-                          ProductSerializer, OrderSerializer, 
-                          ProductParameterSerializer, ParameterSerializer)
+                                            ProductInfoSerializer, OrderSerializer)
+
 
 
 # Create a logger
 logger = logging.getLogger(__name__)
+
 
 class PartnerUpdate(APIView):
     """
@@ -44,7 +34,8 @@ class PartnerUpdate(APIView):
     def post(self, request, *args, **kwargs) -> JsonResponse:
         # Check if the user is a shop
         if request.user.type != 'shop':
-            return JsonResponse({"Status": False, "Error": "Только для магазинов"}, status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({"Status": False, "Error": "Только для магазинов"},
+                                status=status.HTTP_403_FORBIDDEN)
 
         # Get the url and validate it
         url = request.data.get('url')
@@ -114,9 +105,7 @@ class PartnerUpdate(APIView):
 
         return JsonResponse({'Status': True}, status=status.HTTP_200_OK)
 
-
-        
-        
+   
 class PartnerStatus(ListCreateAPIView):
     """
     Класс для изменения статуса поставщика

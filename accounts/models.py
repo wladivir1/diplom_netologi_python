@@ -2,15 +2,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .managers import UserManager
 
-# Create your models here.
+
 USER_TYPE_CHOICES = (
     ('shop', 'Магазин'),
     ('buyer', 'Покупатель'),
-
 )
 
 
@@ -44,7 +42,9 @@ class User(AbstractUser):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
+    type = models.CharField(verbose_name='Тип пользователя',
+                            choices=USER_TYPE_CHOICES,
+                            max_length=5, default='buyer')
 
 
     class Meta:
@@ -52,13 +52,11 @@ class User(AbstractUser):
         verbose_name_plural = "Список пользователей"
         app_label = 'accounts'
         ordering = ('email',)
-        
-        
+
     def __str__(self) -> str:
-        """ Магический метод для представления объекта в консоли. """
-        return self.email        
-        
-        
+        return self.email
+
+
 class Contact(models.Model):
     """ Модель для работы с контактами пользователя """
     objects = models.manager.Manager()
@@ -78,5 +76,5 @@ class Contact(models.Model):
         verbose_name_plural = "Список контактов пользователя"
 
     def __str__(self) -> str:
-        """ Магический метод для представления объекта в консоли. """
-        return f'{self.city} {self.street} {self.house}'        
+        return f'{self.city} {self.street} {self.house}'
+  

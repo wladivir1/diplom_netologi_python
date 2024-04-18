@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import User, Contact
 
-# Register your models here.
+
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
