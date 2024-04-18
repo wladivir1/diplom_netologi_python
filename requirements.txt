@@ -1,6 +1,5 @@
 Django==5.0.4
 django-filter==24.2
-djangorestframework-simplejwt
 djangorestframework==3.15.1
 djoser==2.2.2
 psycopg2-binary==2.9.9
@@ -8,3 +7,5 @@ python-dotenv==1.0.1
 PyYAML==6.0.1
 requests==2.31.0
 ujson==5.9.0
+celery
+redis

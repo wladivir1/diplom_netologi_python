@@ -1,3 +1,5 @@
-from django.test import TestCase
+# shop/tests.py
 
-# Create your tests here.
+        
+        
+        

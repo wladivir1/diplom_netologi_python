@@ -17,6 +17,8 @@ class ContactSerializer(serializers.ModelSerializer):
         def create(self, validated_data):
             contact = Contact.objects.create(**validated_data)
             
+            
+            
         
 class CustomUserSerializer(UserSerializer):
     

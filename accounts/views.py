@@ -18,7 +18,10 @@ from permission.permissions import IsOwnerOrAdminOrReadOnly
 
 # Create your views here.
 class ActivateUser(UserViewSet):
-    def get_serializer(self, *args, **kwargs):
+    def get_serializer(self, *args, **kwargs) -> UserSerializer:
+        """
+        Переопределение сериализатора для активации пользователя
+        """
         serializer_class = self.get_serializer_class()
         kwargs.setdefault('context', self.get_serializer_context())
  
@@ -27,7 +30,10 @@ class ActivateUser(UserViewSet):
  
         return serializer_class(*args, **kwargs)
  
-    def activation(self, request, uid, token, *args, **kwargs):
+    def activation(self, request, uid, token, *args, **kwargs) -> Response:
+        """
+        Активация пользователя
+        """
         super().activation(request, *args, **kwargs)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -38,37 +44,47 @@ class ContactView(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
     permission_classes = (IsOwnerOrAdminOrReadOnly,)
     
-    # функция для получения контактов
-    def get_queryset(self):
+    def get_queryset(self) -> Contact:
         if self.request.user.is_anonymous:
             return Contact.objects.none()
         if not self.request.user.is_authenticated:
             return Contact.objects.none()
         return Contact.objects.filter(user=self.request.user)
     
-    # функция для получения контактов
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-                
-    # функция обновления        
-    def update(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse({"Status": False, "Error": "Log in required"}, status=status.HTTP_403_FORBIDDEN)
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
     
-    # функция удаления
-    def destroy(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse({"Status": False, "Error": "Log in required"}, status=status.HTTP_403_FORBIDDEN)
-        
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return JsonResponse({"Status": True}, status=status.HTTP_204_NO_CONTENT)
+    def list(self, request, *args, **kwargs) -> Response:
+        """ Функция для получения списка контактов """
+        return super().list(request, *args, **kwargs)
+   
+    def update(self, request, *args, **kwargs) -> Response:
+        """ Функция для обновления контактов """
+        contact_id = request.data.get('id')
+        if contact_id is None:
+            return JsonResponse({"Status": False, "Error": "Contact id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {}
+        for field in ['index', 'city', 'street', 'house', 'structure', 'building', 'apartment']:
+            value = request.data.get(field)
+            if value is not None:
+                data[field] = value
+
+        try:
+            Contact.objects.filter(id=contact_id).update(**data)
+        except Exception as e:
+            return JsonResponse({"Status": False, "Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs) -> Response:
+        """ Функция для удаления контактов """
+        items = request.data.get('items')
+        if items is None:
+            return JsonResponse({"Status": False, "Error": "Не указаны данные"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Contact.objects.filter(id__in=items).delete()
+        except Exception as e:
+            return JsonResponse({"Status": False, "Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
     
 class TypeUserView(CreateAPIView):
     """ Представление для работы с типами контактов """
@@ -76,7 +92,8 @@ class TypeUserView(CreateAPIView):
     serializer_class = TypeUserSerializer
     #permission_classes = (IsOwnerOrAdminOrReadOnly,)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> Response:
+        """ Функция для изменения типа пользователя """
         user = User.objects.filter(id=request.user.id).update(type=request.data['type'])
         if not user:
             return JsonResponse({"Status": False, "Error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
