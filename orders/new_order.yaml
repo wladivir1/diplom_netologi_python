@@ -1,0 +1,17 @@
+orders:
+- order_items: &id001
+  - category: "\u0421\u043C\u0430\u0440\u0442\u0444\u043E\u043D\u044B"
+    product_info_id: 74
+    product_name: "\u0421\u043C\u0430\u0440\u0442\u0444\u043E\u043D Apple iPhone XR\
+      \ 256GB (\u043A\u0440\u0430\u0441\u043D\u044B\u0439)"
+    quantity: 3
+    total_sum: 195000
+  - category: "\u0421\u043C\u0430\u0440\u0442\u0444\u043E\u043D\u044B"
+    product_info_id: 73
+    product_name: "\u0421\u043C\u0430\u0440\u0442\u0444\u043E\u043D Apple iPhone XS\
+      \ Max 512GB (\u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u044B\u0439)"
+    quantity: 3
+    total_sum: 330000
+  orders_id: 100
+- order_items: *id001
+  orders_id: 100

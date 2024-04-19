@@ -17,7 +17,7 @@ from datetime import timedelta
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR =  Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -63,10 +63,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend_api.urls'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'orders') 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'orders')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,8 +138,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'accounts.User'
 
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-#EMAIL_HOST = os.getenv('EMAIL_HOST')
+#EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
 
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

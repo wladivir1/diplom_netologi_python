@@ -19,6 +19,7 @@ from .models import (Shop, Category, Parameter,
                     ProductParameter, Order, OrderItem)
 from serializers.searializers_shop import (ShopSerializer, CategorySerializer,
                                             ProductInfoSerializer, OrderSerializer)
+from .task import create_yml_json, send_email_to_supplier
 
 
 
@@ -367,9 +368,9 @@ class OrderView(APIView):
             if not request or not request.user:
                 return JsonResponse({"Status": False, "Error": "Невозможно проверить тип пользователя, так как запрос или пользователь не определены"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            basket = Order.objects.filter(user_id=request.user.id, state='new')
+            basket = Order.objects.filter(user_id=request.user.id, state='basket')
             if not basket:
-                return JsonResponse({"Status": False, "Error": "Новых заказов нет"}, status=status.HTTP_404_NOT_FOUND)
+                return JsonResponse({"Status": False, "Error": "Заказ уже подтвержден"}, status=status.HTTP_404_NOT_FOUND)
             
             order_id = request.data.get('order_id')
             contact_id = request.data.get('contact_id')
@@ -383,6 +384,8 @@ class OrderView(APIView):
                 return JsonResponse({"Status": False, "Error": "Контакт не найден"}, status=status.HTTP_404_NOT_FOUND)
             
             is_updated = Order.objects.filter(id=order_id).update(state='new')
+            create_yml_json(order_id)
+            send_email_to_supplier(order_id)
             OrderItem.objects.filter(order_id=order_id).update(contact=Contact.objects.get(id=contact_id))
             if is_updated:
                     request.user.email_user(f'Обновление статуса заказа',

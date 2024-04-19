@@ -12,7 +12,6 @@ urlpatterns = [
     path('categories', views.CategoryView.as_view(), name='categories'),
     path('shops', views.ShopListView.as_view(), name='shops'),
     path('products', views.ProductInfoView.as_view(), name='products'),
-    path('basket', views.BasketView.as_view({'post': 'create', 'get':' list',
-                                             'delete': 'destroy', 'put': 'update'}), name='orders'),
+    path('basket', views.BasketView.as_view({ 'get': 'list', 'post': 'create', 'delete': 'destroy', 'put': 'update'}), name='orders'),
     path('orders', views.OrderView.as_view(), name='confirmation-order'),
 ]
