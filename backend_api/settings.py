@@ -68,7 +68,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'orders')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'orders')],
+        'DIRS': [os.path.join(BASE_DIR, 'fixtures')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

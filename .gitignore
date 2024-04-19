@@ -1,2 +1,16 @@
 .env
-__pycache__/
+__pycache__*
+*.pyc
+*.pyo
+*.egg-info
+*.dist-info
+*.so
+*.o
+*.a
+*.pyc
+*.pyo
+*.egg-info
+*.dist-info
+*.so
+*.o
+*.a 

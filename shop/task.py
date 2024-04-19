@@ -2,19 +2,13 @@ import os
 import yaml
 import json
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.mail.message import EmailMultiAlternatives
 
-
 from backend_api.celery import app
-from shop.models import Order, Product, ProductInfo, OrderItem
-from serializers.searializers_shop import OrderItemSerializer
+from shop.models import Order, OrderItem
 
 
 @app.task()
@@ -42,8 +36,8 @@ def create_yml_json(order_id):
         # Gather information for the file
         products = OrderItem.objects.filter(order_id=order.id)
         # Check for null pointer references
-        yaml_file_path = settings.BASE_DIR / 'orders' / 'new_order.yaml'
-        json_file_path = settings.BASE_DIR / 'orders' / 'new_order.json'
+        yaml_file_path = settings.BASE_DIR / 'fixtures' / 'orders' / 'new_order.yaml'
+        json_file_path = settings.BASE_DIR / 'fixtures' / 'orders' / 'new_order.json'
         
         folder_path = os.path.join(settings.BASE_DIR, 'orders')
         if not os.path.exists(folder_path):
@@ -73,18 +67,18 @@ def create_yml_json(order_id):
         # Create YAML file
         with open(yaml_file_path, 'w') as file:
             data = {
-                'orders': orders
+                "orders": orders
             }
             yaml.dump(data, file)
             
         # Create JSON file    
         with open(json_file_path, 'w') as file:
             data = {
-                'orders': orders
+                "orders": orders
             }
-        
             json.dump(data, file, indent=4)
 
+@app.task()           
 def send_email_to_supplier(order_id):
     """ Функция для отправки письма контрагенту """
     
@@ -101,7 +95,7 @@ def send_email_to_supplier(order_id):
         email = EmailMessage(subject, message, from_email, [shop_email])
         
         # Attach the order file
-        email.attach_file('orders/new_order.yaml')
+        email.attach_file('fixtures/orders/new_order.yaml')
 
         # Send the email
         email.send()

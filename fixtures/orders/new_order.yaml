@@ -12,6 +12,6 @@ orders:
       \ Max 512GB (\u0437\u043E\u043B\u043E\u0442\u0438\u0441\u0442\u044B\u0439)"
     quantity: 3
     total_sum: 330000
-  orders_id: 100
+  orders_id: 102
 - order_items: *id001
-  orders_id: 100
+  orders_id: 102
