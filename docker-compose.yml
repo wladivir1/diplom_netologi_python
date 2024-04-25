@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+
+    db:
+        image: postgres:15
+
+        restart: always
+
+        ports:
+            - "5433:5432"
+            
+        env_file:
+            - .env
+            
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+
+    web:
+        build: .
+
+        expose:
+            - "8000"
+
+        env_file:
+            - .env     
+
+        depends_on:
+            - db  
+        volumes:
+            - static_volume:/app/static/
+            - orders_volume:/app/media/
+
+        entrypoint: /app/entrypoint.sh    
+
+    
+    nginx:
+        build: ./nginx
+
+        volumes:
+            - static_volume:/app/static/
+            - orders_volume:/app/media/
+
+        ports:
+            - "80:80"
+
+        depends_on:
+            - web 
+
+        restart: always
+
+
+    redis:
+        image: redis:alpine
+        restart: always
+        ports:
+            - "6379:6379"                   
+
+
+volumes:
+    pgdata:
+    static_volume:
+    orders_volume:
+   
+    
+
+
+
+    
+
+
+    
+
+    

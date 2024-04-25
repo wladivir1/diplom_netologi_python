@@ -10,6 +10,5 @@ urlpatterns = [
     path('', include('djoser.urls')),
     path('', include('djoser.urls.authtoken')),
     path('types/', views.TypeUserView.as_view(), name='user-type'),
-    path('contacts/', views.ContactView.as_view({'get': 'list', 'post': 'create',
-                                                 'put': 'update', 'delete': 'destroy'}), name='contact'),
+    path('contacts/', views.ContactView.as_view({'get': 'list', 'post': 'create', 'put': 'update', 'delete': 'destroy'}), name='contact'),
 ]

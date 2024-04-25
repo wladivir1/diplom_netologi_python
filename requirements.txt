@@ -1,4 +1,4 @@
-Django==5.0.4
+Django
 django-filter==24.2
 djangorestframework==3.15.1
 djoser==2.2.2
@@ -8,4 +8,5 @@ PyYAML==6.0.1
 requests==2.31.0
 ujson==5.9.0
 celery
-redis
+gunicorn
+

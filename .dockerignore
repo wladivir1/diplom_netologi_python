@@ -1,0 +1,7 @@
+__pycache__/
+.git
+.gitignore
+api.md
+screens.md
+service.md
+README.md

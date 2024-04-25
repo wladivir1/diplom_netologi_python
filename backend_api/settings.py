@@ -63,7 +63,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend_api.urls'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'orders') 
+MEDIA_ROOT = BASE_DIR / 'orders'
 
 TEMPLATES = [
     {
@@ -133,12 +133,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-#EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -173,11 +173,11 @@ REST_FRAMEWORK = {
 }
 
 # REDIS related settings
-REDIS_HOST = 'localhost'
-REDIS_PORT = '6379'
-CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 #DJOSER
 DJOSER = {

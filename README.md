@@ -101,24 +101,17 @@
  -- Настройки базы данных находятся в файле .env
 
 
-### Для запуска проекта выполните следующие коианды
+### Для запуска проекта выполните следующие команды
+### Должен быть уже установлен Docker и Docker Compose
 
-1. создать виртуальное окружение с помощью команды:
-   - python -m venv venv
-   - source venv/bin/activate
+1. клонировать репозиторий:
+   - git clone https://github.com/wladivir1/diplom_netologi_python.git
 
-2. Установить зависимости:
-   - pip install -r requirements.txt
+2. создаем контейнеры и запускаем проэкт:
+   - docker-compose -p backend up --build
 
-3. Сделать миграции:
-   - python manage.py makemigrations
-   - python manage.py migrate
-
-4. Создать пользователя администратора: 
-   - python manage.py createsuperuser
-   
-5. Запустить сервер: 
-   - python manage.py runserver
+3. url-адрес для доступа к API:
+   - http://0.0.0.0:80/api/v1/
 
 
 
