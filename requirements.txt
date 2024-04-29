@@ -9,4 +9,5 @@ requests==2.31.0
 ujson==5.9.0
 celery
 gunicorn
+drf-spectacular
 
