@@ -23,6 +23,8 @@ urlpatterns = [
     path('drf_auth/', include('rest_framework.urls'), name='api_auth'),
     path('api/v1/', include('accounts.urls', namespace='accounts')),
     path("api/v1/", include("shop.urls", namespace="shop")),
+    path('auth/', include('social_django.urls', namespace='social')),
+    #path('auth/logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
     
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

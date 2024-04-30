@@ -10,4 +10,5 @@ ujson==5.9.0
 celery
 gunicorn
 drf-spectacular
+social-auth-app-django
 
