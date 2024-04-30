@@ -9,9 +9,12 @@
 
 Выберите «Web-приложение», задайте пользовательское имя и добавьте URL-адрес вашего фронтенда в качестве URI авторизованного перенаправления. Для удобства тестирования я рекомендую также добавить:
 
-http://127.0.0.1:3000
-http://127.0.0.1:3000/api/auth/callback/google
-https://developers.google.com/oauthplayground
+`http://127.0.0.1:3000`
+
+`http://127.0.0.1:3000/api/auth/callback/google`
+
+`https://developers.google.com/oauthplayground`
+
 Наконец, нажмите кнопку «Создать», чтобы сгенерировать учетные данные:
 ![screenshot](https://pythonist.ru/wp-content/uploads/2023/09/google-console-oauth-create-1024x819.png)
 
