@@ -12,4 +12,6 @@ urlpatterns = [
     
     path('types/', views.TypeUserView.as_view(), name='user-type'),
     path('contacts/', views.ContactView.as_view({'get': 'list', 'post': 'create', 'put': 'update', 'delete': 'destroy'}), name='contact'),
+    path('avatars/', views.AvatarView.as_view({'get': 'list', 'put': 'update', 'delete': 'destroy'}), name='avatar'),
+    
 ]

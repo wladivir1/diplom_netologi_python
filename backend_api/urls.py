@@ -18,12 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from accounts import views
+
 urlpatterns = [
+    path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')), # Django JET dashboard URLS
     path('admin/', admin.site.urls),
     path('drf_auth/', include('rest_framework.urls'), name='api_auth'),
     path('api/v1/', include('accounts.urls', namespace='accounts')),
     path("api/v1/", include("shop.urls", namespace="shop")),
     path('auth/', include('social_django.urls', namespace='social')),
+    path('media/<str:size>/<path:path>', views.AvatarView.as_view({'get': 'list'}), name='avatar_list'),
     #path('auth/logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
     
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

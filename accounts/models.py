@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+from versatileimagefield.fields import VersatileImageField, PPOIField
+from versatileimagefield.image_warmer import VersatileImageFieldWarmer
+from django.dispatch import receiver
 
 from .managers import UserManager
 
@@ -20,6 +23,8 @@ class User(AbstractUser):
     objects = UserManager()
     USERNAME_FIELD = 'email'
     surname = models.CharField(verbose_name='Фамилия', max_length=30, blank=True)
+    avatar = VersatileImageField('Avatar', upload_to='avatars/',
+                                 blank=True, null=True, ppoi_field='avatar_ppoi')
     email = models.EmailField(_('email address'), unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     phone = models.CharField(verbose_name='Телефон', max_length=20, blank=True)
@@ -46,7 +51,8 @@ class User(AbstractUser):
                             choices=USER_TYPE_CHOICES,
                             max_length=5, default='buyer')
 
-
+    avatar_ppoi = PPOIField()
+    
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = "Список пользователей"
@@ -55,6 +61,26 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.email
+    
+@receiver(models.signals.post_save, sender=User)
+def warm_User_headshot_images(sender, instance, **kwargs):
+    """Ensures Person head shots are created post-save"""
+    user_img_warmer = VersatileImageFieldWarmer(
+        instance_or_queryset=instance,
+        rendition_key_set='user_avatar',
+        image_attr='avatar',
+    )
+    num_created, failed_to_create = user_img_warmer.warm()
+    
+@receiver(models.signals.post_delete, sender=User)
+def delete_ExampleImageModel_images(sender, instance, **kwargs):
+    """
+    Deletes ExampleImageModel image renditions on post_delete.
+    """
+    # Deletes Image Renditions
+    instance.avatar.delete_all_created_images()
+    # Deletes Original Image
+    instance.avatar.delete(save=False)    
 
 
 class Contact(models.Model):

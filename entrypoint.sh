@@ -11,8 +11,10 @@ then
 fi
 
 sleep 10
-#python manage.py makemigrations
+python manage.py makemigrations
 python manage.py migrate
+python manage.py migrate jet
+python manage.py migrate dashboard
 python manage.py createcachetable
 python manage.py collectstatic --noinput
 

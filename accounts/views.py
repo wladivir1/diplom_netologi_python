@@ -6,7 +6,7 @@ from rest_framework.generics import CreateAPIView
 from djoser.views import UserViewSet
 
 from .models import User, Contact
-from serializers.serializers_accounts import (ContactSerializer,
+from serializers.serializers_accounts import (ContactSerializer, AvatarSerializer,
                                                 UserSerializer, TypeUserSerializer)
 from permission.permissions import IsOwnerOrAdminOrReadOnly
 
@@ -102,4 +102,45 @@ class TypeUserView(CreateAPIView):
             return JsonResponse({"Status": False, "Error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
 
-   
+class AvatarView(viewsets.ModelViewSet):
+    """ Представление для работы с аватарками """
+
+    queryset = User.objects.all()
+    serializer_class = AvatarSerializer
+
+    def get_queryset(self) -> User:
+        
+        if self.request.user.is_anonymous:
+            return User.objects.none()
+        if not self.request.user.is_authenticated:
+            return User.objects.none()
+        return User.objects.filter(id=self.request.user.id)
+    
+    def list(self, request, *args, **kwargs) -> Response:
+        """ Функция для получения аватарок """
+        return super().list(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs) -> Response:
+        """ Функция для создания аватарки """
+        
+        avatar = request.data.get('avatar')
+        if avatar is None:
+            return JsonResponse({"Status": False, "Error": "Avatar is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not avatar.content_type.startswith('image'):
+            return JsonResponse({"Status": False, "Error": "Avatar must be an image"}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.get(id=request.user.id).avatar is not None:
+            return JsonResponse({"Status": False, "Error": "Avatar already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            User.objects.filter(id=request.user.id).update(avatar=avatar)
+        except Exception as e:
+            return JsonResponse({"Status": False, "Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
+    
+    def destroy(self, request, *args, **kwargs) -> Response:
+        """ Функция для удаления аватарки """
+        
+        try:
+            User.objects.filter(id=request.user.id).update(avatar=None)
+        except Exception as e:
+            return JsonResponse({"Status": False, "Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
