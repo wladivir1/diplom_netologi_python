@@ -1,5 +1,7 @@
 from django.db import models
+from django.dispatch import receiver
 from django.conf import settings
+from versatileimagefield.fields import VersatileImageField, PPOIField
 
 from accounts.models import Contact
 
@@ -67,6 +69,11 @@ class Product(models.Model):
                                  verbose_name='Категория',
                                  related_name='products')
     name = models.CharField(max_length=50, verbose_name='Название продукта')
+    image = VersatileImageField('Изображение',
+                                upload_to='product_images/', blank=True, null=True,
+                                ppoi_field='image_ppoi')
+    
+    image_ppoi = PPOIField()
 
     class Meta:
         verbose_name = 'Продукт'

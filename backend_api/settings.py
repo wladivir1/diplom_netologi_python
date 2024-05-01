@@ -252,13 +252,15 @@ SPECTACULAR_SETTINGS = {
 VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
     'user_avatar': [
         ('full_size', 'url'),
+        ('small_square_crop', 'crop__50x50'),
+    ],
+    'product_image': [
+        ('full_size', 'url'),
         ('thumbnail', 'thumbnail__100x100'),
-        ('medium_square_crop', 'crop__400x400'),
-        ('small_square_crop', 'crop__50x50')
     ],
     'image_gallery': [
         ('gallery_large', 'crop__800x450'),
-        ('gallery_square_small', 'crop__50x50')
+        ('gallery_square_small', 'crop__50x50'),
     ],
     'primary_image_detail': [
         ('hero', 'crop__600x283'),

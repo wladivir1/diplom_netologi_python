@@ -99,4 +99,3 @@ def send_email_to_supplier(order_id):
 
         # Send the email
         email.send()
-

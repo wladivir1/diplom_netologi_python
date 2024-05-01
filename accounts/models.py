@@ -60,27 +60,7 @@ class User(AbstractUser):
         ordering = ('email',)
 
     def __str__(self) -> str:
-        return self.email
-    
-@receiver(models.signals.post_save, sender=User)
-def warm_User_headshot_images(sender, instance, **kwargs):
-    """Ensures Person head shots are created post-save"""
-    user_img_warmer = VersatileImageFieldWarmer(
-        instance_or_queryset=instance,
-        rendition_key_set='user_avatar',
-        image_attr='avatar',
-    )
-    num_created, failed_to_create = user_img_warmer.warm()
-    
-@receiver(models.signals.post_delete, sender=User)
-def delete_ExampleImageModel_images(sender, instance, **kwargs):
-    """
-    Deletes ExampleImageModel image renditions on post_delete.
-    """
-    # Deletes Image Renditions
-    instance.avatar.delete_all_created_images()
-    # Deletes Original Image
-    instance.avatar.delete(save=False)    
+        return self.email   
 
 
 class Contact(models.Model):

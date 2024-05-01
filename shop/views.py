@@ -17,9 +17,10 @@ from accounts.models import User, Contact
 from .models import (Shop, Category, Parameter,
                     Product, ProductInfo, 
                     ProductParameter, Order, OrderItem)
-from serializers.searializers_shop import (ShopSerializer, CategorySerializer,
+from serializers.searializers_shop import (ShopSerializer, CategorySerializer, ImageProductSerializer,
                                             ProductInfoSerializer, OrderSerializer)
 from .task import create_yml_json, send_email_to_supplier
+from permission.permissions import IsOwnerOrAdminOrReadOnly
 
 
 
@@ -186,6 +187,95 @@ class ProductInfoView(ListAPIView):
     permission_classes = [AllowAny]
     filterset_fields = ['shop', 'product__category', 'product__name', 'quantity', 'price']
 
+
+class ImageUrlProductView(viewsets.ModelViewSet):
+    """
+    Класс для работы с изображениеми продуктов
+    """
+    queryset = Product.objects.all()
+    serializer_class = ImageProductSerializer
+    
+    def get_queryset(self):
+        return self.queryset
+    
+    def list(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Функция для получения списка изображений продуктов
+        """
+        pk = self.kwargs.get('pk')
+        product = Product.objects.filter(id=pk).first()
+        return JsonResponse({"image": product.image.url}, status=status.HTTP_200_OK)
+
+
+class ImageProductView(viewsets.ModelViewSet):
+    """
+    Класс для работы с изображениеми продуктов
+    """
+    queryset = Product.objects.all()
+    serializer_class = ImageProductSerializer
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
+    
+    def get_queryset(self):
+        return self.queryset
+    
+    def update(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Функция для создания изображений продуктов
+        """
+        try:
+            # Check for null pointer references
+            if request is None or request.data is None or kwargs is None:
+                return JsonResponse({"Status": False, "Error": "Запрос или данные не определены"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if request.user.type != 'shop':
+                return JsonResponse({"Status": False, "Error": "Только для магазинов"}, status=status.HTTP_403_FORBIDDEN)
+
+            pk = kwargs.get('pk')
+            image = request.data.get('image')
+
+            if image is None or pk is None:
+                raise ValueError("Не указаны обязательные аргументы")
+
+            product = Product.objects.filter(id=pk).first()
+            if product is None:
+                raise ValueError("Продукт с таким id не найден")
+
+            Product.objects.update_or_create(id=pk, defaults={'image': image})
+            return JsonResponse({"Status": True}, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return JsonResponse({"Status": False, "Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Log the error and return a generic response to prevent leaking information
+            logger.exception(e)
+            raise Http404("Произошла ошибка")
+        
+    def destroy(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Функция для удаления изображений продуктов
+        """
+        if request.user.type != 'shop':
+            return JsonResponse({"Status": False, "Error": "Только для магазинов"}, status=status.HTTP_403_FORBIDDEN)
+        # Check for null pointer references
+        if request is None or kwargs is None:
+            return JsonResponse({"Status": False, "Error": "Запрос или данные не определены"}, status=status.HTTP_400_BAD_REQUEST)
+
+        pk = kwargs.get('pk')
+        if pk is None:
+            return JsonResponse({"Status": False, "Error": "Не указан id продукта"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            product = Product.objects.get(id=pk)
+            if product.image:
+                product.image.thumbnail['100x100'].clear_cache()
+                product.image.thumbnail['100x100'].delete()
+                product.image.delete()
+            return JsonResponse({"Status": True}, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return JsonResponse({"Status": False, "Error": "Продукт с таким id не найден"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Log the error and return a generic response to prevent leaking information
+            logger.exception(e)
+            raise Http404("Произошла ошибка")
 
 
 class BasketView(viewsets.ModelViewSet):

@@ -1,6 +1,7 @@
 # shop/serializers.py
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from shop.models import (Shop, Category, Product,
                      ProductInfo, Parameter, ProductParameter,
@@ -35,7 +36,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
         ordering = ('-name',)
         read_only_fields = ('id',)
-        
+
         
 class ProductSerializer(serializers.ModelSerializer):
     """ Сериализатор продукта """
@@ -44,7 +45,16 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ('id','category', 'name')
+        fields = ('id','category', 'name', 'image')        
+
+
+class ImageProductSerializer(serializers.ModelSerializer):
+    """ Сериализатор изображения продукта """
+    
+    class Meta:
+        model = Product
+        fields = ('id','name', 'image')
+        read_only_fields = ('id', 'name')
 
 
 class ProductParameterSerializer(serializers.ModelSerializer):
@@ -56,7 +66,7 @@ class ProductParameterSerializer(serializers.ModelSerializer):
         model = ProductParameter
         fields = ('id', 'parametr', 'value')
 
-        
+
 class ProductInfoSerializer(serializers.ModelSerializer):
     """ Сериализатор информации о продукте """
     
