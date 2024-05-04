@@ -1,15 +1,23 @@
 import os
 import yaml
 import json
+import logging
 
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.mail.message import EmailMultiAlternatives
+from versatileimagefield.image_warmer import VersatileImageFieldWarmer
+from django.db import models
+from django.dispatch import receiver
 
 from backend_api.celery import app
-from shop.models import Order, OrderItem
+from shop.models import Order, OrderItem, Product
+from accounts.models import User
 
+
+# Create a logger
+logger = logging.getLogger(__name__)
 
 @app.task()
 def send_email(message: str, email: str, *args, **kwargs) -> str:
@@ -99,3 +107,127 @@ def send_email_to_supplier(order_id):
 
         # Send the email
         email.send()
+
+@app.task()
+@receiver(models.signals.post_delete, sender=User)
+def delete_User_images(sender, instance, **kwargs):
+    """
+    Deletes User image renditions on post_delete.
+    """
+    # Check for null pointer references
+    if instance is None:
+        logger.error(
+            'delete_User_images: instance is None - skipping'
+        )
+        return
+    try:
+        # Deletes Image Renditions
+        if instance.avatar:
+            instance.avatar.delete_all_created_images()
+    except AttributeError:
+        # Catch case where instance.avatar is None
+        pass
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.exception(
+            'delete_User_images: error - {0}'.format(e)
+        )
+    try:
+        # Deletes Original Image
+        if instance.avatar:
+            instance.avatar.delete(save=False)
+    except AttributeError:
+        # Catch case where instance.avatar is None
+        pass
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.exception(
+            'delete_User_images: error - {0}'.format(e)
+        )
+
+
+
+@app.task()
+@receiver(models.signals.post_save, sender=User)
+def warm_User_images(sender, instance, **kwargs):
+    """Ensures User head shots are created post-save"""
+    try:
+        # Check for null pointer references
+        if instance is None:
+            logger.error(
+                'warm_User_images: instance is None - skipping'
+            )
+            return
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.exception(
+            'warm_User_images: error - {0}'.format(e)
+        )
+    try:
+        user_img_warmer = VersatileImageFieldWarmer(
+            instance_or_queryset=instance,
+            rendition_key_set='user_avatar',
+            image_attr='avatar',
+        )
+        num_created, failed_to_create = user_img_warmer.warm()
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.exception(
+            'warm_User_images: error - {0}'.format(e)
+        )
+    
+
+
+@app.task()
+@receiver(models.signals.post_save, sender=Product)
+def warm_Product_images(sender, instance, **kwargs):
+    """Ensures Product head shots are created post-save"""
+    try:
+        # Check for null pointer references
+        if instance is None:
+            logger.error(
+                'warm_Product_images: instance is None - skipping'
+            )
+            return
+
+        product_img_warmer = VersatileImageFieldWarmer(
+            instance_or_queryset=instance,
+            rendition_key_set='product_image',
+            image_attr='image',
+        )
+        num_created, failed_to_create = product_img_warmer.warm()
+
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.exception(
+            'warm_Product_images: error - {0}'.format(e)
+        )
+
+@app.task()
+@receiver(models.signals.post_delete, sender=Product)
+def delete_Product_images(sender, instance, **kwargs):
+    """
+    Deletes Product image renditions on post_delete.
+    """
+    # Deletes Image Renditions
+    try:
+        if instance.image:
+            instance.image.delete_all_created_images()
+    except AttributeError:
+        # Catch case where instance.image is None
+        pass
+    # Deletes Original Image
+    try:
+        if instance.image:
+            instance.image.delete(save=False)
+    except AttributeError:
+        # Catch case where instance.image is None
+        pass
+    except Exception as e:
+        # Catch unhandled exceptions and log the error
+        logger.error(
+            f'Error deleting image renditions/original image for Product '
+            f'{instance.id} - {e}'
+        )
+
+    

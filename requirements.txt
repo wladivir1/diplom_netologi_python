@@ -7,10 +7,12 @@ python-dotenv==1.0.1
 PyYAML==6.0.1
 requests==2.31.0
 ujson==5.9.0
-celery
 gunicorn
 drf-spectacular
 social-auth-app-django
 django-jet-reboot
 google-api-python-client==1.4.1
 django-versatileimagefield==3.1
+django-cacheops
+celery[redis]
+flower

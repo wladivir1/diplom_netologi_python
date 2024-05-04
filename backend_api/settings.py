@@ -35,6 +35,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    #'cacheops',
     'jet.dashboard',
     'jet',
     
@@ -323,6 +324,50 @@ REDIS_PORT = os.getenv('REDIS_PORT')
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+
+CACHEOPS_REDIS = {
+    'host': REDIS_HOST, # redis-server is on same machine
+    'port': 6379,        # default redis port
+    'db': 0,             # SELECT non-default redis database
+                         # using separate redis db or redis instance
+                         # is highly recommended
+
+    'socket_timeout': 3,   # connection timeout in seconds, optional
+    # 'password': '...',     # optional
+    # 'unix_socket_path': '' # replaces host and port
+}
+
+CACHEOPS = {
+    # Automatically cache any User.objects.get() calls for 15 minutes
+    # This also includes .first() and .last() calls,
+    # as well as request.user or post.author access,
+    # where Post.author is a foreign key to auth.User
+    'auth.user': {'ops': 'get', 'timeout': 60*3},
+
+    # Automatically cache all gets and queryset fetches
+    # to other django.contrib.auth models for an hour
+    'auth.*': {'ops': {'fetch', 'get'}, 'timeout': 60*3},
+
+    # Cache all queries to Permission
+    # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
+    'auth.permission': {'ops': 'all', 'timeout': 60*3},
+
+    # Enable manual caching on all other models with default timeout of an hour
+    # Use Post.objects.cache().get(...)
+    #  or Tags.objects.filter(...).order_by(...).cache()
+    # to cache particular ORM request.
+    # Invalidation is still automatic
+    #'*.*': {'ops': (), 'timeout': 60*60},
+
+    # And since ops is empty by default you can rewrite last line as:
+    '*.*': {'timeout': 60*5},
+
+    # NOTE: binding signals has its overhead, like preventing fast mass deletes,
+    #       you might want to only register whatever you cache and dependencies.
+
+    # Finally you can explicitely forbid even manual caching with:
+    #'some_app.*': None,
+}
 
 #DJOSER
 DJOSER = {

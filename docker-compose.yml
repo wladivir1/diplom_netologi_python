@@ -1,5 +1,16 @@
 version: '3.9'
 
+# x-environment-defaults: &environment-defaults
+#   DEBUG: "False"
+#   DB_NAME: "postgres"
+#   DB_USER: "postgres"
+#   DB_PASSWORD: "postgres"
+#   DB_HOST: "db"
+#   DB_PORT: 5432
+#   CELERY_BROKER_URL: "redis://redis:6379/0"
+#   CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+#   SECRET_KEY: "django-insecure-nw^y+m^wmxza1asgk+)!ua2qx9)g+#v=6%76-9i8i(6eqiw94j"
+
 services:
 
     db:
@@ -10,8 +21,10 @@ services:
         ports:
             - "5433:5432"
             
-        env_file:
-            - .env
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
             
         volumes:
             - pgdata:/var/lib/postgresql/data
@@ -55,7 +68,46 @@ services:
         image: redis:alpine
         restart: always
         ports:
-            - "6379:6379"                   
+            - "6379:6379" 
+
+    celery:
+        build: .
+        
+        env_file:
+            - .env
+
+        command: celery -A backend_api worker -l info
+
+        depends_on:
+            - redis          
+            - db
+        
+
+    celery-beat:
+        build: .
+
+        env_file:
+            - .env
+
+        command: celery -A backend_api beat -l info
+
+        depends_on:
+            - celery
+            - redis          
+            - db
+
+
+    flower:
+        build: .
+
+        ports:
+            - "5555:5555"
+        depends_on:
+            - redis
+            - celery
+            - celery-beat
+
+        command: celery -A backend_api flower --broker=redis://redis:6379/0
 
 
 volumes:
